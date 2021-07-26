@@ -1,3 +1,8 @@
+/*
+ * Copyright 2010-2021 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ */
+
 package org.jetbrains.kotlin.gradle
 
 import com.intellij.testFramework.TestDataFile
@@ -464,11 +469,11 @@ abstract class BaseGradleIT {
 
         val errors = "(?m)^.*\\[ERROR] \\[\\S+] (.*)$".toRegex().findAll(output)
         val errorMessage = buildString {
-            appendln("Gradle build failed")
-            appendln()
+            appendLine("Gradle build failed")
+            appendLine()
             if (errors.any()) {
-                appendln("Possible errors:")
-                errors.forEach { match -> appendln(match.groupValues[1]) }
+                appendLine("Possible errors:")
+                errors.forEach { match -> appendLine(match.groupValues[1]) }
             }
         }
         fail(errorMessage)
@@ -492,7 +497,7 @@ abstract class BaseGradleIT {
     }
 
     fun CompiledProject.assertClassFilesNotContain(dir: File, vararg strings: String) {
-        val classFiles = dir.walk().filter { it.isFile && it.extension.toLowerCase() == "class" }
+        val classFiles = dir.walk().filter { it.isFile && it.extension.lowercase() == "class" }
 
         for (cf in classFiles) {
             checkBytecodeNotContains(cf, strings.toList())
@@ -851,10 +856,10 @@ Finished executing task ':$taskName'|
             }
 
         val xmlString = buildString {
-            appendln("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-            appendln("<results>")
+            appendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+            appendLine("<results>")
             files.forEach { file ->
-                appendln(
+                appendLine(
                     file.readText()
                         .trimTrailingWhitespaces()
                         .replace(projectDir.absolutePath, "/\$PROJECT_DIR$")
@@ -862,7 +867,7 @@ Finished executing task ':$taskName'|
                         .replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n", "")
                 )
             }
-            appendln("</results>")
+            appendLine("</results>")
         }
 
         val doc = SAXBuilder().build(xmlString.reader())
@@ -900,7 +905,7 @@ Finished executing task ':$taskName'|
                 // see https://docs.gradle.org/current/userguide/logging.html#sec:choosing_a_log_level
                 LogLevel.LIFECYCLE -> Unit
                 //Command line option for other log levels
-                else -> add("--${minLogLevel.name.toLowerCase()}")
+                else -> add("--${minLogLevel.name.lowercase()}")
             }
             if (options.daemonOptionSupported) {
                 add(if (options.withDaemon) "--daemon" else "--no-daemon")
@@ -961,7 +966,7 @@ Finished executing task ':$taskName'|
             }
 
             add("-Dorg.gradle.unsafe.configuration-cache=${options.configurationCache}")
-            add("-Dorg.gradle.unsafe.configuration-cache-problems=${options.configurationCacheProblems.name.toLowerCase()}")
+            add("-Dorg.gradle.unsafe.configuration-cache-problems=${options.configurationCacheProblems.name.lowercase()}")
 
             // Workaround: override a console type set in the user machine gradle.properties (since Gradle 4.3):
             add("--console=plain")
@@ -973,7 +978,7 @@ Finished executing task ':$taskName'|
             val notUsingAgpWithWarnings =
                 options.androidGradlePluginVersion == null || options.androidGradlePluginVersion > AGPVersion.v3_6_0
             if (supportFailingBuildOnWarning && notUsingAgpWithWarnings && options.warningMode == WarningMode.Fail) {
-                add("--warning-mode=${WarningMode.Fail.name.toLowerCase()}")
+                add("--warning-mode=${WarningMode.Fail.name.lowercase()}")
             }
             addAll(options.freeCommandLineArgs)
         }

@@ -55,11 +55,11 @@ class MppHighlightingTestDataWithGradleIT : BaseGradleIT() {
 
         // create Gradle Kotlin source sets for project roots:
         val scriptCustomization = buildString {
-            appendln()
-            appendln("kotlin {\n    sourceSets {")
+            appendLine()
+            appendLine("kotlin {\n    sourceSets {")
             sourceRoots.forEach { sourceRoot ->
                 if (sourceRoot.kotlinSourceSetName != "commonMain") {
-                    appendln(
+                    appendLine(
                         """        create("${sourceRoot.kotlinSourceSetName}") {
                           |            dependsOn(getByName("commonMain"))
                           |            listOf(${cliCompiler.targets.joinToString { "$it()" }}).forEach { 
@@ -70,7 +70,7 @@ class MppHighlightingTestDataWithGradleIT : BaseGradleIT() {
                         """.trimMargin()
                     )
                 } else {
-                    appendln("    // commonMain source set used for common module")
+                    appendLine("    // commonMain source set used for common module")
                 }
             }
 
@@ -79,16 +79,16 @@ class MppHighlightingTestDataWithGradleIT : BaseGradleIT() {
                 sourceRoot.dependencies.forEach { dependency ->
                     sourceRoots.find { it.qualifiedName == dependency }?.let { depSourceRoot ->
                         val depSourceSet = depSourceRoot.kotlinSourceSetName
-                        appendln("""        getByName("${sourceRoot.kotlinSourceSetName}").dependsOn(getByName("$depSourceSet"))""")
+                        appendLine("""        getByName("${sourceRoot.kotlinSourceSetName}").dependsOn(getByName("$depSourceSet"))""")
                     }
                 }
             }
-            appendln("    }\n}")
+            appendLine("    }\n}")
         }
 
         gradleBuildScript().appendText("\n" + scriptCustomization)
 
-        val tasks = sourceRoots.map { "compile" + it.kotlinSourceSetName.capitalize() + "KotlinMetadata" }
+        val tasks = sourceRoots.map { "compile" + it.kotlinSourceSetName.replaceFirstChar(Char::uppercaseChar) + "KotlinMetadata" }
 
         build(*tasks.toTypedArray()) {
             if (expectedErrorsPerSourceSetName.values.all { it.all(ErrorInfo::isAllowedInCli) }) {
@@ -176,7 +176,7 @@ class MppHighlightingTestDataWithGradleIT : BaseGradleIT() {
             get() = partsToQualifiedName(qualifiedNameParts)
 
         val kotlinSourceSetName
-            get() = "intermediate${qualifiedName.capitalize()}"
+            get() = "intermediate${qualifiedName.replaceFirstChar(Char::uppercaseChar)}"
 
         val gradleSrcDir
             get() = "src/$kotlinSourceSetName/kotlin"
